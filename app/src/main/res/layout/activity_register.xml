@@ -39,13 +39,28 @@
         android:hint="ejemplo@correo.com"
         android:inputType="textEmailAddress"
         android:id="@+id/registerEmail"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre de Usuario"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="16dp"
+        android:textSize="20dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Usuario"
+        android:inputType="text"
+        android:id="@+id/registerUsername"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Contraseña"
         android:textColor="@color/black"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="16dp"
         android:textSize="20dp"/>
 
@@ -60,7 +75,7 @@
         android:layout_height="wrap_content"
         android:text="Repetir Contraseña"
         android:textColor="@color/black"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="16dp"
         android:textSize="20dp"/>
 

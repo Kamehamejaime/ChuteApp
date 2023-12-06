@@ -18,9 +18,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class register extends MainActivity {
-    private EditText registerEmail, registerPassword, confirmPassword;
+    private EditText registerEmail, registerPassword, confirmPassword, registerUsername;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -30,12 +31,14 @@ public class register extends MainActivity {
         registerEmail = findViewById(R.id.registerEmail);
         registerPassword = findViewById(R.id.registerPassword);
         confirmPassword = findViewById(R.id.confirmPassword);
+        registerUsername = findViewById(R.id.registerUsername);
     }
 
     public void onClickRegister(View view){
         String email = registerEmail.getText().toString();
         String password = registerPassword.getText().toString();
         String confirm = confirmPassword.getText().toString();
+        String username = registerUsername.getText().toString();
 
         if (password.equals(confirm)){
             mAuth.createUserWithEmailAndPassword(email, password)
@@ -45,7 +48,20 @@ public class register extends MainActivity {
                             if (task.isSuccessful()){
                                 Log.d(TAG, "createUserWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                updateUI(user);
+                                UserProfileChangeRequest profileCreate = new UserProfileChangeRequest.Builder()
+                                        .setDisplayName(username)
+                                                .build();
+                                assert user != null;
+                                user.updateProfile(profileCreate)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if(task.isSuccessful()) {
+                                                    Log.d(TAG, "Nombre de usuario generado");
+                                                    updateUI(user);
+                                                }
+                                            }
+                                        });
                             }
                             else{
                                 Log.w(TAG, "createUSerWithEmail:failure", task.getException());

@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class Perfil extends AppCompatActivity {
     private FirebaseUser user;
     private TextView emailTextView, usernameTextView;
-    private String email, username;
+    private String email, username, uID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -26,7 +26,8 @@ public class Perfil extends AppCompatActivity {
         user = (FirebaseUser) bundle.get("user");
         if (user != null) {
             email = user.getEmail();
-            username = user.getUid();
+            username = user.getDisplayName();
+            uID = user.getUid();
         }
         setup();
     }
@@ -46,7 +47,7 @@ public class Perfil extends AppCompatActivity {
     }
 
     public void onClickMisEquipos(View view){
-        Intent intent = new Intent(this,MisEquipos.class);
+        Intent intent = new Intent(this,MisEquipos.class).putExtra("uID", uID);
         startActivity(intent);
     }
 

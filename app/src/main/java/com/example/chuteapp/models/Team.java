@@ -15,7 +15,6 @@ public class Team {
     public String name;
     int ID;
     int qtyPlayers;
-    byte logo;
 
     public Team(Context context, int id) {
         dh = new DataHelper(context, "equipos.db", null, 1);

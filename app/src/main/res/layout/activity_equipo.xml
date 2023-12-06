@@ -30,12 +30,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleDetails">
 
-        <TextView
-            android:id="@+id/idEditarEquipo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="hola"/>
-
         <EditText
             android:id="@+id/nombreEditar"
             android:layout_width="match_parent"

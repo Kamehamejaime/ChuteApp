@@ -5,37 +5,59 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class Crear extends AppCompatActivity {
-    EditText edtNombre;
+    EditText edtNombre, cantPlayers;
+    String userId;
+    private final static String TAG = "CrearEquipos";
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-
+        Bundle bundle = getIntent().getExtras();
+        userId = (String) bundle.get("uID");
         edtNombre = (EditText) findViewById(R.id.nomEquipo);
+        cantPlayers = (EditText) findViewById(R.id.cantPlayers);
     }
     public void onClickCrearEquipo(View view) {
-        DataHelper dh = new DataHelper(this, "equipos.db", null, 1);
-        SQLiteDatabase bd = dh.getWritableDatabase();
-        ContentValues reg = new ContentValues();
-        reg.put("name", edtNombre.getText().toString());
-        long resp = bd.insert("equipos", null, reg);
-        bd.close();
-        if (resp == -1) {
-            Toast.makeText(this, "No se pudo Ingresar", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Equipo creado Correctamente", Toast.LENGTH_LONG).show();
+        Map<String, Object> team = new HashMap<>();
+        String teamName = edtNombre.getText().toString();
+        int qtyPlayers = Integer.parseInt(cantPlayers.getText().toString());
+        team.put("uId", userId);
+        team.put("teamName", teamName);
+        team.put("qtyPlayers", qtyPlayers);
 
-        }
-        finish();
+        db.collection("UserProps").document("Teams")
+                .set(team)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "DocumentSnapshot successfully written");
+                        Toast.makeText(Crear.this, "Equipo creado con éxito", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                        Toast.makeText(Crear.this, "Error al crear equipo", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
     }
 }

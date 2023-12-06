@@ -32,7 +32,7 @@ public class Equipo extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null){
             String id = intent.getStringExtra("contenido");
-            TextView idEquipoEditar = findViewById(R.id.idEditarEquipo);
+            TextView idEquipoEditar = findViewById(R.id.nombreEditar);
             idEquipoEditar.setText(id);
             this.idBd = Integer.parseInt(id);
         }

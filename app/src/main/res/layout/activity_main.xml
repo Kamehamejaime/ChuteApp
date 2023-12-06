@@ -6,7 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@drawable/gradient">
+    android:background="@drawable/gradient"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent">
 
    <!--Logo pantalla inicio sesión-->
    <ImageView
@@ -31,10 +37,9 @@
        android:orientation="vertical"
        app:layout_constraintBottom_toBottomOf="parent"
        app:layout_constraintEnd_toEndOf="parent"
-       app:layout_constraintHorizontal_bias="0.496"
        app:layout_constraintStart_toStartOf="parent"
-       app:layout_constraintTop_toBottomOf="@+id/imageView"
-       app:layout_constraintVertical_bias="0.0">
+       app:layout_constraintTop_toTopOf="parent"
+       app:layout_constraintVertical_bias="1.0">
 
       <!--para cambiar la fontFamily agregarla a carpeta fonts en minúsculas y sin guiones-->
       <TextView
@@ -50,7 +55,7 @@
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintHorizontal_bias="0.496"
-          app:layout_constraintStart_toStartOf="parent"/>
+          app:layout_constraintStart_toStartOf="parent" />
 
       <EditText
           android:id="@+id/emailLogin"
@@ -85,11 +90,11 @@
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintHorizontal_bias="0.496"
-          app:layout_constraintStart_toStartOf="parent"/>
+          app:layout_constraintStart_toStartOf="parent" />
 
       <Space
           android:layout_width="match_parent"
-          android:layout_height="wrap_content" />
+          android:layout_height="110dp" />
 
       <Button
           android:layout_width="match_parent"
@@ -99,24 +104,17 @@
           android:onClick="onClickIngreso"
           android:shadowColor="@color/greenEmphasisSecondary"
           android:text="@string/ingreso"
-          tools:ignore="TextContrastCheck"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintHorizontal_bias="0.496"
-          app:layout_constraintStart_toStartOf="parent"/>
+          tools:ignore="TextContrastCheck" />
+
       <Button
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginHorizontal="20dp"
-          android:onClick="onClickRegistro"
           android:backgroundTint="#048693"
+          android:onClick="onClickRegistro"
           android:shadowColor="@color/greenEmphasisSecondary"
           android:text="Registrarse"
-          tools:ignore="TextContrastCheck"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintHorizontal_bias="0.496"
-          app:layout_constraintStart_toStartOf="parent"/>
+          tools:ignore="TextContrastCheck" />
 
    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

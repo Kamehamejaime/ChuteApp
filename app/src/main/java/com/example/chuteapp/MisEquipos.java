@@ -14,7 +14,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +32,16 @@ public class MisEquipos extends AppCompatActivity {
     ListView lista;
     TextView id, carga;
     private long selectedItemID;
-    private String selectedItemName;
+    private String selectedItemName, Uid;
     Button btnEdit,btnDelete;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mis_equipos);
+        Bundle bundle = getIntent().getExtras();
+        Uid = (String) bundle.get("uID");
         lista = (ListView) findViewById(R.id.listaMisEquipos);
         btnEdit = (Button) findViewById(R.id.btnEditar);
         btnDelete = (Button) findViewById(R.id.btnEliminar);
@@ -40,53 +50,47 @@ public class MisEquipos extends AppCompatActivity {
         asyncTask.execute();
     }
 
-    public void CargarLista(){
-        DataHelper dh = new DataHelper(this, "equipos.db", null, 1);
-        SQLiteDatabase bd = dh.getWritableDatabase();
-        Cursor c = bd.rawQuery("SELECT id, name FROM equipos", null);
-
+    public void CargarLista() {
         // Se crea un arreglo donde se almacenarán los equipos obtenidos de la BD
         List<EquipoAd> equiposlista = new ArrayList<>();
-
-        if (c.moveToFirst()) {
-            do {
-                // Se guarda la ID
-                long idBase = c.getLong(c.getColumnIndexOrThrow("id"));
-
-                // Se guarda el nombre
-                String nameBase = c.getString(c.getColumnIndexOrThrow("name"));
-
-                // Se añade los datos al arreglo
-                EquipoAd equipo = new EquipoAd(idBase, nameBase);
-                equiposlista.add(equipo);
-            } while (c.moveToNext());
-
-            bd.close();
-
-            // Se carga la ListView
-            if (equiposlista.isEmpty()) {
-                // Si no hay elementos, hay que asegurarse de que el adaptador esté vacío
-                lista.setAdapter(null);
-                btnEdit.setVisibility(View.GONE);
-                btnDelete.setVisibility(View.GONE);
-            } else {
-                ArrayAdapter<EquipoAd> adapter = new ArrayAdapter<>
-                        (this, android.R.layout.simple_expandable_list_item_1, equiposlista);
-                lista.setAdapter(adapter);
-                btnEdit.setVisibility(View.VISIBLE);
-                btnDelete.setVisibility(View.VISIBLE);
-                clickLista(equiposlista);
-            }
-        } else {
-            // Si el cursor está vacío, hay que asegurarse de que el adaptador y la ListView estén vacíos
-            lista.setAdapter(null);
-            btnEdit.setVisibility(View.GONE);
-            btnDelete.setVisibility(View.GONE);
-            TextView txtEquipoId = findViewById(R.id.idEquipo);
-            txtEquipoId.setText("");
-            TextView txtEquipoName = findViewById(R.id.nameEquipo);
-            txtEquipoName.setText("");
-        }
+        db.collection("Equipos")
+                .whereEqualTo("uID", Uid)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                long idBase = document.getLong("id");
+                                String nameBase = document.getString("teamName");
+                                EquipoAd equipo = new EquipoAd(idBase, nameBase);
+                                equiposlista.add(equipo);
+                            }
+                            if (equiposlista.isEmpty()) {
+                                // Si no hay elementos, hay que asegurarse de que el adaptador esté vacío
+                                lista.setAdapter(null);
+                                btnEdit.setVisibility(View.GONE);
+                                btnDelete.setVisibility(View.GONE);
+                            } else {
+                                ArrayAdapter<EquipoAd> adapter = new ArrayAdapter<>
+                                        (MisEquipos.this, android.R.layout.simple_expandable_list_item_1, equiposlista);
+                                lista.setAdapter(adapter);
+                                btnEdit.setVisibility(View.VISIBLE);
+                                btnDelete.setVisibility(View.VISIBLE);
+                                clickLista(equiposlista);
+                            }
+                        } else {
+                            // Si el cursor está vacío, hay que asegurarse de que el adaptador y la ListView estén vacíos
+                            lista.setAdapter(null);
+                            btnEdit.setVisibility(View.GONE);
+                            btnDelete.setVisibility(View.GONE);
+                            TextView txtEquipoId = findViewById(R.id.idEquipo);
+                            txtEquipoId.setText("");
+                            TextView txtEquipoName = findViewById(R.id.nameEquipo);
+                            txtEquipoName.setText("");
+                        }
+                    }
+                });
     }
     public void clickLista(List<EquipoAd>list){
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -105,7 +109,7 @@ public class MisEquipos extends AppCompatActivity {
         });
     }
     public void onClickCrear(View view){
-        Intent intent = new Intent(this,Crear.class);
+        Intent intent = new Intent(this,Crear.class).putExtra("uID", Uid);
         startActivity(intent);
     }
 

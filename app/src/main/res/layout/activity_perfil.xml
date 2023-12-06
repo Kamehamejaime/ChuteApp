@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient">
+    android:background="@drawable/gradient"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,14 +14,22 @@
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="fill"
+            android:layout_gravity="fill_horizontal"
             android:layout_weight="0"
-            android:orientation="horizontal">
+            android:layoutDirection="inherit"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
                 android:id="@+id/imageButton5"
@@ -29,26 +38,27 @@
                 android:layout_gravity="center"
                 android:layout_weight="0"
                 android:backgroundTint="#9AFFFFFF"
-                app:srcCompat="@drawable/logout_24px"
                 android:onClick="logOut"
+                app:srcCompat="@drawable/logout_24px"
                 app:tint="#C8B71C1C" />
 
             <Space
-                android:layout_width="300dp"
+                android:layout_width="314dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0" />
 
             <ImageButton
-                android:id="@+id/imageButtonStore"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="5dp"
-                android:layout_weight="0"
-                android:backgroundTint="#00FFFFFF"
-                android:contentDescription="Tienda"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00FFFFFF"
                 android:onClick="onClickStore"
                 android:scaleType="center"
-                app:srcCompat="@drawable/store" />
+                android:src="@drawable/store" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0" />
 
         </LinearLayout>
 

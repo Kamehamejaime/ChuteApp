@@ -38,6 +38,15 @@
             android:hint="Nombre de equipo"
             android:layout_marginVertical="40dp"
             android:layout_marginHorizontal="20dp"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cantidad de Jugadores"
+            android:id="@+id/cantPlayers"
+            android:inputType="number"
+            android:layout_marginBottom="40dp"
+            android:layout_marginHorizontal="20dp"/>
         <Button
             android:id="@+id/btnNewTeam"
             android:layout_width="match_parent"
