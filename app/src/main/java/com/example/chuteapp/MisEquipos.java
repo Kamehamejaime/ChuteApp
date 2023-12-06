@@ -17,7 +17,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.chuteapp.models.Team;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -31,9 +34,12 @@ public class MisEquipos extends AppCompatActivity {
 
     ListView lista;
     TextView id, carga;
-    private long selectedItemID;
+    Boolean itemsLoaded = false;
+    private String selectedItemID;
     private String selectedItemName, Uid;
     Button btnEdit,btnDelete;
+    String targetTeam;
+    private final static String TAG = "MisEquipos";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -52,18 +58,19 @@ public class MisEquipos extends AppCompatActivity {
 
     public void CargarLista() {
         // Se crea un arreglo donde se almacenarán los equipos obtenidos de la BD
-        List<EquipoAd> equiposlista = new ArrayList<>();
-        db.collection("Equipos")
-                .whereEqualTo("uID", Uid)
+        List<Team> equiposlista = new ArrayList<>();
+        db.collection("Teams")
+                .whereEqualTo("userId", Uid)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                long idBase = document.getLong("id");
-                                String nameBase = document.getString("teamName");
-                                EquipoAd equipo = new EquipoAd(idBase, nameBase);
+                                String nameBase = document.getString("name");
+                                long qtyPlayers = document.getLong("qtyPlayers");
+                                Team equipo = new Team(nameBase, Uid, qtyPlayers);
+                                equipo.setId(document.getId());
                                 equiposlista.add(equipo);
                             }
                             if (equiposlista.isEmpty()) {
@@ -72,7 +79,7 @@ public class MisEquipos extends AppCompatActivity {
                                 btnEdit.setVisibility(View.GONE);
                                 btnDelete.setVisibility(View.GONE);
                             } else {
-                                ArrayAdapter<EquipoAd> adapter = new ArrayAdapter<>
+                                ArrayAdapter<Team> adapter = new ArrayAdapter<>
                                         (MisEquipos.this, android.R.layout.simple_expandable_list_item_1, equiposlista);
                                 lista.setAdapter(adapter);
                                 btnEdit.setVisibility(View.VISIBLE);
@@ -92,13 +99,14 @@ public class MisEquipos extends AppCompatActivity {
                     }
                 });
     }
-    public void clickLista(List<EquipoAd>list){
+    public void clickLista(List<Team>list){
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Aquí obtengo el ID del elemento seleccionado en la base de datos Profe, lo logré :D
+                targetTeam = list.get(position).getId();
                 selectedItemID = list.get(position).getId();
-                selectedItemName = list.get(position).getNombre();
+                selectedItemName = list.get(position).getName();
 
                 TextView txtEquipoId = findViewById(R.id.idEquipo);
                 txtEquipoId.setText(String.valueOf(selectedItemID));
@@ -114,31 +122,25 @@ public class MisEquipos extends AppCompatActivity {
     }
 
     public void onClickEditar(View view){
-        TextView id = (TextView) findViewById(R.id.idEquipo);
         // En ActivityA
-        String txtId = id.getText().toString();
-
-        Intent intent = new Intent(MisEquipos.this, Equipo.class);
-        intent.putExtra("contenido", txtId);
+        Intent intent = new Intent(this, Equipo.class).putExtra("targetTeam", targetTeam);
         startActivity(intent);
     }
     public void onClickEliminar(View view){
-        DataHelper dh = new DataHelper(this, "equipos.db",  null, 1);
-        SQLiteDatabase bd = dh.getWritableDatabase();
-
-        id = (TextView) findViewById(R.id.idEquipo);
-
-        int iD = Integer.parseInt(id.getText().toString());
-        long resp = bd.delete("equipos", "id="+ iD, null);
-        bd.close();
-
-        if(resp ==-1){
-            Toast.makeText(this, "No se pudo Eliminar",
-                    Toast.LENGTH_LONG).show();
-        }else{
-            Toast.makeText(this, "Equipo Eliminado",
-                    Toast.LENGTH_LONG).show();
-        }
+        db.collection("Teams").document(targetTeam)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error deleting document", e);
+                    }
+                });
         CargarLista();
     }
 

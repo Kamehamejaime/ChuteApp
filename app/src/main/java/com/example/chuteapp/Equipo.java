@@ -8,53 +8,62 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.chuteapp.MisEquipos;
+import com.example.chuteapp.models.Team;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class Equipo extends AppCompatActivity {
 
     EditText edtName;
-    int idBd;
+    Team targetTeam;
+    String team;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final static String TAG = "Equipo";
 
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_equipo);
-        Intent intent = getIntent();
-        if (intent != null){
-            String id = intent.getStringExtra("contenido");
-            TextView idEquipoEditar = findViewById(R.id.nombreEditar);
-            idEquipoEditar.setText(id);
-            this.idBd = Integer.parseInt(id);
-        }
+        edtName = findViewById(R.id.nombreEditar);
+        Bundle bundle = getIntent().getExtras();
+        team = (String) bundle.get("targetTeam");
+        DocumentReference documentReference = db.collection("Teams").document(team);
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()){
+                        targetTeam = new Team(document.getString("name"), document.getString("userId"), document.getLong("qtyPlayers"));
+                        Log.d(TAG, "DocumentSnapshot getted successfully");
+                        edtName.setText(targetTeam.getName());
+                    } else {
+                        Log.d(TAG, "No hay documento");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
 
     public void onClickModificar(View view){
-        DataHelper dh = new DataHelper(this, "equipos.db", null, 1);
-        SQLiteDatabase bd = dh.getWritableDatabase();
-        ContentValues reg = new ContentValues();
-        edtName = (EditText) findViewById(R.id.nombreEditar);
-        reg.put("name", edtName.getText().toString());
-        long resp  = bd.update("equipos", reg, "id=?", new String[]
-                {String.valueOf(idBd)});
-        bd.close();
-        if(resp == -1){
-            Toast.makeText(this, "No se pudo Modificar",
-                    Toast.LENGTH_LONG).show();
-        }else {
-            Toast.makeText(this, "Equipo Modificado",
-                    Toast.LENGTH_LONG).show();
-        }
-        finish();
+
     }
 
 }

@@ -13,8 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.chuteapp.models.Team;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -35,18 +37,15 @@ public class Crear extends AppCompatActivity {
         cantPlayers = (EditText) findViewById(R.id.cantPlayers);
     }
     public void onClickCrearEquipo(View view) {
-        Map<String, Object> team = new HashMap<>();
         String teamName = edtNombre.getText().toString();
         int qtyPlayers = Integer.parseInt(cantPlayers.getText().toString());
-        team.put("uId", userId);
-        team.put("teamName", teamName);
-        team.put("qtyPlayers", qtyPlayers);
+        Team team = new Team(teamName, userId, qtyPlayers);
 
-        db.collection("UserProps").document("Teams")
-                .set(team)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection("Teams")
+                .add(team)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
-                    public void onSuccess(Void unused) {
+                    public void onSuccess(DocumentReference documentReference) {
                         Log.d(TAG, "DocumentSnapshot successfully written");
                         Toast.makeText(Crear.this, "Equipo creado con éxito", Toast.LENGTH_SHORT).show();
                     }

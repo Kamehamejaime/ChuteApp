@@ -13,7 +13,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class Perfil extends AppCompatActivity {
     private FirebaseUser user;
-    private TextView emailTextView, usernameTextView;
+    private TextView emailTextView, usernameTextView, eventViewer;
     private String email, username, uID;
 
     @Override
@@ -22,6 +22,7 @@ public class Perfil extends AppCompatActivity {
         setContentView(R.layout.activity_perfil);
         emailTextView = findViewById(R.id.emailTextView);
         usernameTextView = findViewById(R.id.usernameTextView);
+        eventViewer = findViewById(R.id.eventViewer);
         Bundle bundle = getIntent().getExtras();
         user = (FirebaseUser) bundle.get("user");
         if (user != null) {
