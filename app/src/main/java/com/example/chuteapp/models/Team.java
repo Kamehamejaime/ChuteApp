@@ -28,6 +28,14 @@ public class Team {
     public Team() {
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setQtyPlayers(long qtyPlayers) {
+        this.qtyPlayers = qtyPlayers;
+    }
+
     public String getName() {
         return name;
     }

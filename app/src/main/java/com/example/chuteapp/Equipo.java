@@ -16,6 +16,8 @@ import android.widget.Toast;
 import com.example.chuteapp.MisEquipos;
 import com.example.chuteapp.models.Team;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -31,6 +33,7 @@ public class Equipo extends AppCompatActivity {
     String team;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final static String TAG = "Equipo";
+    DocumentReference documentReference;
 
 
 
@@ -42,7 +45,7 @@ public class Equipo extends AppCompatActivity {
         edtName = findViewById(R.id.nombreEditar);
         Bundle bundle = getIntent().getExtras();
         team = (String) bundle.get("targetTeam");
-        DocumentReference documentReference = db.collection("Teams").document(team);
+        documentReference = db.collection("Teams").document(team);
         documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -63,7 +66,23 @@ public class Equipo extends AppCompatActivity {
     }
 
     public void onClickModificar(View view){
-
+        targetTeam.setName(edtName.getText().toString());
+        documentReference
+                .update("name", targetTeam.getName())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "DocumentSnapshot successfully updated!");
+                        Toast.makeText(Equipo.this, "Equipo modificado con exito", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                        Toast.makeText(Equipo.this, "Error al modificar el equipo", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 }
